@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,23 +18,19 @@ public class MouseItemData : MonoBehaviour
         itemCount.text = "";
     }
 
-    public void UpdateMouseSlot(InventorySlot invSlot)
-    {
-        this.assignedInventorySlot.AssignItem(invSlot);
-        itemSprite.sprite = invSlot.ItemData.icon;
-        itemCount.text = invSlot.StackSize.ToString();
-        itemSprite.color = Color.white;
-    }
-
     private void Update()
     {
-        if (assignedInventorySlot.ItemData != null)
+        // TODO : Add controller support
+
+        if (assignedInventorySlot.ItemData != null) // If has an item, follow the mouse position
         {
             transform.position = Mouse.current.position.ReadValue();
 
-            if(Mouse.current.leftButton.wasPressedThisFrame && !IsPointerOverUIObject())
+            if (Mouse.current.leftButton.wasPressedThisFrame && !IsPointerOverUIObject())
             {
                 ClearSlot();
+
+                // TODO : Drop the item on the ground.
             }
         }
     }
@@ -46,6 +41,14 @@ public class MouseItemData : MonoBehaviour
         itemCount.text = "";
         itemSprite.color = Color.clear;
         itemSprite.sprite = null;
+    }
+
+    public void UpdateMouseSlot(InventorySlot invSlot)
+    {
+        this.assignedInventorySlot.AssignItem(invSlot);
+        itemSprite.sprite = invSlot.ItemData.icon;
+        itemCount.text = invSlot.StackSize.ToString();
+        itemSprite.color = Color.white;
     }
 
     public static bool IsPointerOverUIObject()

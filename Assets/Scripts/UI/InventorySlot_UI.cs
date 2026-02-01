@@ -2,7 +2,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class InventorySlot_UI : MonoBehaviour
 {
     [SerializeField] private Image itemSprite;
@@ -43,17 +42,18 @@ public class InventorySlot_UI : MonoBehaviour
 
             else
                 itemCount.text = "";
-
         }
         else
         {
-            ClearSlot();
+            itemSprite.sprite = null;
+            itemSprite.color = Color.clear;
+            itemCount.text = "";
         }
     }
 
     public void UpdateUISlot()
     {
-        if(assignedInventorySlot != null)
+        if (assignedInventorySlot != null)
         {
             UpdateUISlot(assignedInventorySlot);
         }
