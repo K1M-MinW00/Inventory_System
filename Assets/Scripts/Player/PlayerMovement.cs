@@ -40,8 +40,6 @@ public class PlayerMovement : MonoBehaviour
         float x = playerControls.Player.Move.ReadValue<Vector2>().x;
         float y = playerControls.Player.Move.ReadValue<Vector2>().y;
 
-        Debug.Log(x + " , " + y);
-
         Vector3 move = new Vector3(x, 0, y);
         controller.Move(move * playerSpeed * Time.deltaTime);
 

@@ -17,7 +17,7 @@ public class InventorySlot_UI : MonoBehaviour
 
     private void Awake()
     {
-        ClearShot();
+        ClearSlot();
 
         button = GetComponent<Button>();
         button?.onClick.AddListener(OnUISlotClick);
@@ -47,7 +47,7 @@ public class InventorySlot_UI : MonoBehaviour
         }
         else
         {
-            ClearShot();
+            ClearSlot();
         }
     }
 
@@ -59,7 +59,7 @@ public class InventorySlot_UI : MonoBehaviour
         }
 
     }
-    public void ClearShot()
+    public void ClearSlot()
     {
         assignedInventorySlot?.ClearSlot();
         itemSprite.sprite = null;
