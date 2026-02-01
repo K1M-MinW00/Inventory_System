@@ -17,12 +17,12 @@ public class ItemPickUp : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        var inventory = other.transform.GetComponent<InventoryHolder>();
+        var inventory = other.transform.GetComponent<PlayerInventoryHolder>();
 
         if (inventory == null)
             return;
 
-        if (inventory.InventorySystem.AddToInventory(itemData, 1))
+        if (inventory.AddToInventory(itemData, 1))
         {
             Destroy(this.gameObject);
         }
