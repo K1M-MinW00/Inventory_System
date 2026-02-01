@@ -51,12 +51,13 @@ public class InventorySlot_UI : MonoBehaviour
         }
     }
 
-    public void UpdatUISlot()
+    public void UpdateUISlot()
     {
         if(assignedInventorySlot != null)
         {
             UpdateUISlot(assignedInventorySlot);
         }
+
     }
     public void ClearShot()
     {
