@@ -4,26 +4,20 @@ using UnityEngine.InputSystem;
 
 public class PlayerInventoryHolder : InventoryHolder
 {
-    [SerializeField] protected int secondaryInventorySize;
-    [SerializeField] protected InventorySystem secondaryInventorySystem;
+    public static UnityAction OnPlayerInventoryChanged;
+    public static UnityAction<InventorySystem, int> OnPlayerInventoryDisplayRequested;
 
-    public InventorySystem SecondaryInventorySystem => secondaryInventorySystem;
 
-    public static UnityAction<InventorySystem> OnPlayerBackpackDisplayRequested;
-
-    protected override void Awake()
+    private void Start()
     {
-        base.Awake();
-
-        secondaryInventorySystem = new InventorySystem(secondaryInventorySize);
+        SaveGameManager.data.playerInventory = new InventorySaveData(primaryInventorySystem);
     }
-
 
     private void Update()
     {
         if (Keyboard.current.bKey.wasPressedThisFrame)
         {
-            OnPlayerBackpackDisplayRequested?.Invoke(secondaryInventorySystem);
+            OnPlayerInventoryDisplayRequested?.Invoke(primaryInventorySystem, offset);
         }
     }
 
@@ -33,11 +27,18 @@ public class PlayerInventoryHolder : InventoryHolder
         {
             return true;
         }
-        else if (secondaryInventorySystem.AddToInventory(itemData, amount))
-        {
-            return true;
-        }
 
         return false;
+    }
+
+    protected override void LoadInventory(SaveData data)
+    {
+        // Check the saveData for the specific chests inventory, and if it exists, load it in.
+
+        if (data.playerInventory.InvSystem != null)
+        {
+            this.primaryInventorySystem = data.playerInventory.InvSystem;
+            OnPlayerInventoryChanged?.Invoke();
+        }
     }
 }
