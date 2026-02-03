@@ -1,9 +1,11 @@
+using System;
 using UnityEngine;
 
 [System.Serializable]
-public class InventorySlot
+public class InventorySlot : ISerializationCallbackReceiver
 {
-    [SerializeField] private ItemData itemData; // Reference to the data
+    [NonSerialized] private ItemData itemData; // Reference to the data
+    [SerializeField] private int itemID = -1;
     [SerializeField] private int stackSize;     // Current stack size - how many of the data do we have ?
 
     public ItemData ItemData => itemData;
@@ -12,6 +14,7 @@ public class InventorySlot
     public InventorySlot(ItemData itemData, int amount) // Constructor to make a occupied inventory slot
     {
         this.itemData = itemData;
+        this.itemID = itemData.ID;
         this.stackSize = amount;
     }
 
@@ -23,6 +26,7 @@ public class InventorySlot
     public void ClearSlot() // Clears the slot.
     {
         itemData = null;
+        itemID = -1;
         stackSize = -1;
     }
 
@@ -36,6 +40,7 @@ public class InventorySlot
         else // Override slot with the inventory slot that we're passing in
         {
             itemData = invSlot.itemData;
+            itemID = itemData.ID;
             stackSize = 0;
             AddToStack(invSlot.StackSize);
         }
@@ -43,12 +48,13 @@ public class InventorySlot
     public void UpdateInventorySlot(ItemData data, int amount) // Update slot directly
     {
         itemData = data;
+        itemID = itemData.ID;
         stackSize = amount;
     }
 
     public bool EnoughRoomLeftInStack(int amountToAdd, out int amountRemaining) // Would there be enough room in the stack for the amount we're trying to add 
     {
-        amountRemaining = ItemData.maxStackSize - stackSize;
+        amountRemaining = ItemData.MaxStackSize - stackSize;
 
         return EnoughRoomLeftInStack(amountToAdd);
     }
@@ -56,7 +62,7 @@ public class InventorySlot
 
     public bool EnoughRoomLeftInStack(int amountToAdd) // 
     {
-        if (itemData == null || (itemData != null && stackSize + amountToAdd <= itemData.maxStackSize))
+        if (itemData == null || (itemData != null && stackSize + amountToAdd <= itemData.MaxStackSize))
             return true;
 
         else
@@ -86,5 +92,19 @@ public class InventorySlot
 
         splitStack = new InventorySlot(itemData, halfStack); // Creates a copy of this slot with half the stack size
         return true;
+    }
+
+    public void OnBeforeSerialize()
+    {
+    }
+
+    public void OnAfterDeserialize()
+    {
+        if (itemID == -1)
+            return;
+
+        var db = Resources.Load<Database>("Database");
+
+        itemData = db.GetItem(itemID);
     }
 }
