@@ -18,6 +18,8 @@ public class InventorySlot_UI : MonoBehaviour
     {
         ClearSlot();
 
+        itemSprite.preserveAspect = true; // This is because the 'preserve aspect ratio' box will not appear if the source image does not have a sprite.
+
         button = GetComponent<Button>();
         button?.onClick.AddListener(OnUISlotClick);
 

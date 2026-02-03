@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 
 public class MouseItemData : MonoBehaviour
@@ -12,10 +13,20 @@ public class MouseItemData : MonoBehaviour
     public TextMeshProUGUI itemCount;
     public InventorySlot assignedInventorySlot;
 
+    private Transform playerTransform;
+    [SerializeField] private float dropOffset = 2f;
+
     private void Awake()
     {
+        itemSprite.preserveAspect = true;
+
         itemSprite.color = Color.clear;
         itemCount.text = "";
+
+        playerTransform = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
+
+        if (playerTransform == null)
+            Debug.LogError("Player Not Found");
     }
 
     private void Update()
@@ -28,9 +39,19 @@ public class MouseItemData : MonoBehaviour
 
             if (Mouse.current.leftButton.wasPressedThisFrame && !IsPointerOverUIObject())
             {
-                ClearSlot();
+                if (assignedInventorySlot.ItemData.ItemPrefab != null) // Drop the item on the ground.
+                    Instantiate(assignedInventorySlot.ItemData.ItemPrefab, playerTransform.position + playerTransform.forward * dropOffset, Quaternion.identity);
 
-                // TODO : Drop the item on the ground.
+                if (assignedInventorySlot.StackSize > 1)
+                {
+                    assignedInventorySlot.AddToStack(-1);
+                    UpdateMouseSlot();
+                }
+                else
+                {
+                    ClearSlot();
+                }
+
             }
         }
     }
@@ -46,8 +67,13 @@ public class MouseItemData : MonoBehaviour
     public void UpdateMouseSlot(InventorySlot invSlot)
     {
         this.assignedInventorySlot.AssignItem(invSlot);
-        itemSprite.sprite = invSlot.ItemData.Icon;
-        itemCount.text = invSlot.StackSize.ToString();
+        UpdateMouseSlot();
+    }
+
+    public void UpdateMouseSlot()
+    {
+        itemSprite.sprite = assignedInventorySlot.ItemData.Icon;
+        itemCount.text = assignedInventorySlot.StackSize.ToString();
         itemSprite.color = Color.white;
     }
 

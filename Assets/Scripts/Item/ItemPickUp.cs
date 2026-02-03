@@ -7,6 +7,8 @@ public class ItemPickUp : MonoBehaviour
     public float pickUpRadius = 1f;
     public ItemData itemData;
 
+    [SerializeField] private float rotSpeed = 20f;
+
     private SphereCollider col;
 
     [SerializeField] private ItemPickUpSaveData itemSaveData;
@@ -14,7 +16,6 @@ public class ItemPickUp : MonoBehaviour
 
     private void Awake()
     {
-        id = GetComponent<UniqueID>().ID;
         SaveLoad.OnLoadGame += LoadGame;
         itemSaveData = new ItemPickUpSaveData(itemData, transform.position, transform.rotation);
 
@@ -25,8 +26,14 @@ public class ItemPickUp : MonoBehaviour
 
     private void Start()
     {
+        id = GetComponent<UniqueID>().ID;
+
         SaveGameManager.data.activeItems.Add(id, itemSaveData);
-        SaveLoad.OnLoadGame += LoadGame;
+    }
+
+    private void Update()
+    {
+        transform.Rotate(Vector3.up * rotSpeed * Time.deltaTime);
     }
 
     private void LoadGame(SaveData data)
