@@ -16,6 +16,6 @@ MonoBehaviour:
   DisplayName: Beer
   Icon: {fileID: 21300000, guid: c06f1c2589a1dcc41b385388110af23f, type: 3}
   MaxStackSize: 5
-  Value: 0
+  Value: 10
   ItemPrefab: {fileID: 1533714509887952540, guid: 3cf7bb267c077a14e8926278b006cd20, type: 3}
   Description: Beer.

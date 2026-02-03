@@ -16,6 +16,6 @@ MonoBehaviour:
   DisplayName: Mana_Potion
   Icon: {fileID: 21300000, guid: 3d347535e6867ca48a2906aff2c29714, type: 3}
   MaxStackSize: 5
-  Value: 0
+  Value: 60
   ItemPrefab: {fileID: 3402861170416419251, guid: b7aed6d9ee7f0564c86ad738b7ae13b1, type: 3}
   Description: Increase your MP.
