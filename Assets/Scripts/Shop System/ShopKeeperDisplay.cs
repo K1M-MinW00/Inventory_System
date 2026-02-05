@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -28,23 +29,35 @@ public class ShopKeeperDisplay : MonoBehaviour
     [SerializeField] private GameObject shoppingCartContentPanel;
 
     private ShopSystem shopSystem;
-    private PlayerInventoryHolder playerInv;
+    private PlayerInventoryHolder playerInventoryHolder;
 
     private Dictionary<ItemData, int> shoppingCart = new Dictionary<ItemData, int>();
     private Dictionary<ItemData, ShoppingCartItem_UI> shoppingCartUI = new Dictionary<ItemData, ShoppingCartItem_UI>();
 
     private int basketTotal;
+    private bool isSelling;
 
     public void DIsplayShopWindow(ShopSystem _shopSystem, PlayerInventoryHolder _playerInv)
     {
         shopSystem = _shopSystem;
-        playerInv = _playerInv;
+        playerInventoryHolder = _playerInv;
 
         RefreshDisplay();
     }
 
     private void RefreshDisplay()
     {
+        if (buyBtn != null)
+        {
+            buyBtnText.text = isSelling ? "Sell Items" : "Buy Items";
+            buyBtn.onClick.RemoveAllListeners();
+
+            if (isSelling)
+                buyBtn.onClick.AddListener(SellItems);
+            else
+                buyBtn.onClick.AddListener(BuyItems);
+        }
+
         ClearSlots();
 
         basketTotalText.enabled = false;
@@ -52,11 +65,40 @@ public class ShopKeeperDisplay : MonoBehaviour
 
         basketTotal = 0;
 
-        playerGoldText.text = $"Player Gold :{playerInv.PrimaryInventorySystem.Gold}";
+        playerGoldText.text = $"Player Gold :{playerInventoryHolder.PrimaryInventorySystem.Gold}";
         shopGoldText.text = $"Shop Gold :{shopSystem.AvailableGold}";
 
         DisplayShopInventory();
     }
+
+    private void SellItems()
+    {
+    }
+
+    private void BuyItems()
+    {
+        if (playerInventoryHolder.PrimaryInventorySystem.Gold < basketTotal)
+            return;
+
+        if (!playerInventoryHolder.PrimaryInventorySystem.CheckInventoryRemaining(shoppingCart))
+            return;
+
+        foreach (var kvp in shoppingCart)
+        {
+            shopSystem.PurchaseItem(kvp.Key, kvp.Value);
+
+            for (int i = 0; i < kvp.Value; i++)
+            {
+                playerInventoryHolder.PrimaryInventorySystem.AddToInventory(kvp.Key, 1);
+            }
+        }
+
+        shopSystem.GainGold(basketTotal);
+        playerInventoryHolder.PrimaryInventorySystem.SpendGold(basketTotal);
+
+        RefreshDisplay();
+    }
+
 
     private void ClearSlots()
     {
@@ -90,4 +132,107 @@ public class ShopKeeperDisplay : MonoBehaviour
     {
 
     }
+
+    public void AddItemToCart(ShopSlot_UI shopSlot_UI)
+    {
+        var data = shopSlot_UI.AssignedItemSlot.ItemData;
+
+        UpdateItemPreview(shopSlot_UI);
+
+        var price = GetModifiedPrice(data, 1, shopSlot_UI.MarkUp);
+
+
+        if (shoppingCart.ContainsKey(data))
+        {
+            shoppingCart[data]++;
+            var newString = $"{data.DisplayName} ({price}G) x {shoppingCart[data]}";
+            shoppingCartUI[data].SetItemText(newString);
+        }
+        else
+        {
+            shoppingCart.Add(data, 1);
+
+            var shoppingCartTextObj = Instantiate(shoppingCartItemPrefab, shoppingCartContentPanel.transform);
+            var newString = $"{data.DisplayName} ({price}G) x 1";
+            shoppingCartTextObj.SetItemText(newString);
+            shoppingCartUI.Add(data, shoppingCartTextObj);
+        }
+
+
+        basketTotal += price;
+        basketTotalText.text = $"Total: {basketTotal}G";
+
+        if (basketTotal > 0 && !basketTotalText.IsActive())
+        {
+            basketTotalText.enabled = true;
+            buyBtn.gameObject.SetActive(true);
+        }
+
+        CheckCartVsAvailableGold();
+    }
+
+    private void CheckCartVsAvailableGold()
+    {
+        var goldToCheck = isSelling ? shopSystem.AvailableGold : playerInventoryHolder.PrimaryInventorySystem.Gold;
+
+        basketTotalText.color = basketTotal > goldToCheck ? Color.red : Color.white;
+
+        if (isSelling || playerInventoryHolder.PrimaryInventorySystem.CheckInventoryRemaining(shoppingCart))
+            return;
+
+        basketTotalText.text = "Not enough room in inventory.";
+        basketTotalText.color = Color.red;
+    }
+
+    public static int GetModifiedPrice(ItemData data, int amount, float markUp)
+    {
+        var baseValue = data.GoldValue * amount;
+
+        return Mathf.RoundToInt(baseValue + baseValue * markUp);
+    }
+
+    public void RemoveItemFromCart(ShopSlot_UI shopSlot_UI)
+    {
+        var data = shopSlot_UI.AssignedItemSlot.ItemData;
+        var price = GetModifiedPrice(data, 1, shopSlot_UI.MarkUp);
+
+        if (shoppingCart.ContainsKey(data))
+        {
+            shoppingCart[data]--;
+            var newString = $"{data.DisplayName} ({price}G) x {shoppingCart[data]}";
+            shoppingCartUI[data].SetItemText(newString);
+
+            if (shoppingCart[data] <= 0)
+            {
+                shoppingCart.Remove(data);
+                var tempObj = shoppingCartUI[data].gameObject;
+                shoppingCartUI.Remove(data);
+                Destroy(tempObj);
+            }
+        }
+
+        basketTotal -= price;
+        basketTotalText.text = $"Total: {basketTotal}G";
+
+        if (basketTotal <= 0 && basketTotalText.IsActive())
+        {
+            basketTotalText.enabled = false;
+            buyBtn.gameObject.SetActive(false);
+            ClearItemPreview();
+        }
+
+        CheckCartVsAvailableGold();
+    }
+
+    private void ClearItemPreview()
+    {
+
+    }
+
+    private void UpdateItemPreview(ShopSlot_UI shopSlot_UI)
+    {
+
+    }
+
+
 }

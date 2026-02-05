@@ -65,4 +65,17 @@ public class ShopSystem
 
         return freeSlot;
     }
+
+    public void PurchaseItem(ItemData data, int amount)
+    {
+        if (!ContainsItem(data, out ShopSlot shopSlot))
+            return;
+
+        shopSlot.RemoveFromStack(amount);
+    }
+
+    public void GainGold(int basketTotal)
+    {
+        availableGold += basketTotal;
+    }
 }

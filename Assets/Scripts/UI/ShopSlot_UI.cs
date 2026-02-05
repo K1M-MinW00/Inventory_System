@@ -9,8 +9,12 @@ public class ShopSlot_UI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI itemCount;
     [SerializeField] private ShopSlot assignedItemSlot;
 
+    public ShopSlot AssignedItemSlot => assignedItemSlot;
+
     [SerializeField] private Button addItemToCartBtn;
     [SerializeField] private Button removeItemFromCartBtn;
+
+    private int tempAmount;
 
     public ShopKeeperDisplay ParentDisplay { get; private set; }
     public float MarkUp { get; private set; }
@@ -34,6 +38,7 @@ public class ShopSlot_UI : MonoBehaviour
     {
         assignedItemSlot = slot;
         MarkUp = markUp;
+        tempAmount = slot.StackSize;
         UpdateUISlot();
     }
 
@@ -44,7 +49,9 @@ public class ShopSlot_UI : MonoBehaviour
             itemSprite.sprite = assignedItemSlot.ItemData.Icon;
             itemSprite.color = Color.white;
             itemCount.text = assignedItemSlot.StackSize.ToString();
-            itemName.text = $"{assignedItemSlot.ItemData.DisplayName} - {assignedItemSlot.ItemData.GoldValue}G";
+
+            var modifiedPrice = ShopKeeperDisplay.GetModifiedPrice(assignedItemSlot.ItemData, 1, MarkUp);
+            itemName.text = $"{assignedItemSlot.ItemData.DisplayName} - {modifiedPrice}G";
         }
         else
         {
@@ -57,11 +64,21 @@ public class ShopSlot_UI : MonoBehaviour
 
     private void AddItemToCart()
     {
-        Debug.Log("Adding Item To Cart");
+        if (tempAmount <= 0)
+            return;
+
+        tempAmount--;
+        ParentDisplay.AddItemToCart(this);
+        itemCount.text = tempAmount.ToString();
     }
 
     private void RemoveItemFromCart()
     {
-        Debug.Log("Removing Item From Cart");
+        if (tempAmount == assignedItemSlot.StackSize)
+            return;
+
+        tempAmount++;
+        ParentDisplay.RemoveItemFromCart(this);
+        itemCount.text = tempAmount.ToString();
     }
 }

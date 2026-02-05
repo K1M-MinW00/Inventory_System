@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class InventorySystem
     public int Gold => gold;
     public List<InventorySlot> InventorySlots => inventorySlots;
     public int InventorySize => InventorySlots.Count;
+
 
     public UnityAction<InventorySlot> OnInventorySlotChanged;
 
@@ -77,5 +79,30 @@ public class InventorySystem
     {
         freeSlot = InventorySlots.FirstOrDefault(i => i.ItemData == null); // Get the first free slot
         return freeSlot == null ? false : true;
+    }
+
+    public bool CheckInventoryRemaining(Dictionary<ItemData, int> shoppingCart)
+    {
+        var cloneSystem = new InventorySystem(InventorySize);
+
+        for (int i = 0; i < InventorySize; i++)
+        {
+            cloneSystem.InventorySlots[i].AssignItem(this.inventorySlots[i]);
+        }
+
+        foreach (var kvp in shoppingCart)
+        {
+            for (int i = 0; i < kvp.Value; i++)
+            {
+                if (!cloneSystem.AddToInventory(kvp.Key, 1))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public void SpendGold(int basketTotal)
+    {
+        gold -= basketTotal;
     }
 }
