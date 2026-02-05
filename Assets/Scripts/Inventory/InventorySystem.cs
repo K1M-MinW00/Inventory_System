@@ -7,13 +7,27 @@ using UnityEngine.Events;
 public class InventorySystem
 {
     [SerializeField] private List<InventorySlot> inventorySlots;
+    [SerializeField] private int gold;
 
+    public int Gold => gold;
     public List<InventorySlot> InventorySlots => inventorySlots;
     public int InventorySize => InventorySlots.Count;
 
     public UnityAction<InventorySlot> OnInventorySlotChanged;
 
     public InventorySystem(int size) // Constructor that sets the amount of slots
+    {
+        gold = 0;
+        CreateInventory(size);
+    }
+
+    public InventorySystem(int _size, int _gold)
+    {
+        gold = _gold;
+        CreateInventory(_size);
+    }
+
+    private void CreateInventory(int size)
     {
         inventorySlots = new List<InventorySlot>(size);
 
@@ -22,6 +36,7 @@ public class InventorySystem
             inventorySlots.Add(new InventorySlot());
         }
     }
+
 
     public bool AddToInventory(ItemData itemToAdd, int amountToAdd)
     {

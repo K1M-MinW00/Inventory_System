@@ -310,6 +310,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd8a6d66255785841bc61ebbca7f857c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemSprite: {fileID: 82023662952134207}
+  itemName: {fileID: 2657754560261274392}
+  itemCount: {fileID: 7134112451172492758}
+  assignedItemSlot:
+    itemID: -1
+    stackSize: -1
+  addItemToCartBtn: {fileID: 1055879630722932494}
+  removeItemFromCartBtn: {fileID: 425075111284298630}
 --- !u!1 &3991589249726937548
 GameObject:
   m_ObjectHideFlags: 0
