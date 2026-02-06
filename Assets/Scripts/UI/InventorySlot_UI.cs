@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,6 +6,7 @@ using UnityEngine.UI;
 public class InventorySlot_UI : MonoBehaviour
 {
     [SerializeField] private Image itemSprite;
+    [SerializeField] private GameObject slotHighlight;
     [SerializeField] private TextMeshProUGUI itemCount;
     [SerializeField] private InventorySlot assignedInventorySlot;
 
@@ -73,5 +75,10 @@ public class InventorySlot_UI : MonoBehaviour
     {
         // Access display class function.
         ParentDisplay?.SlotClicked(this);
+    }
+
+    public void ToggleHighlight()
+    {
+        slotHighlight.SetActive(!slotHighlight.activeInHierarchy);
     }
 }

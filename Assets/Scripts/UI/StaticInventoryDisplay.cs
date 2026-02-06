@@ -5,22 +5,22 @@ using UnityEngine;
 public class StaticInventoryDisplay : InventoryDisplay
 {
     [SerializeField] private InventoryHolder inventoryHolder;
-    [SerializeField] private InventorySlot_UI[] slots;
+    [SerializeField] protected InventorySlot_UI[] slots;
 
 
     protected override void Start()
     {
         base.Start();
 
-        RefreshStaticDisplay();
+        RefreshStaticDisplay(); 
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         PlayerInventoryHolder.OnPlayerInventoryChanged += RefreshStaticDisplay;
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         PlayerInventoryHolder.OnPlayerInventoryChanged -= RefreshStaticDisplay;
     }

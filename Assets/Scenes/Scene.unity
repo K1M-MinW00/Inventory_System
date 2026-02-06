@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 48823686}
   - component: {fileID: 48823685}
   - component: {fileID: 48823684}
-  - component: {fileID: 48823683}
+  - component: {fileID: 48823688}
   m_Layer: 5
   m_Name: Player Hotbar
   m_TagString: Untagged
@@ -255,31 +255,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -390.29367}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &48823683
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 48823681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 808d705eb92494b42bfb39d3e3d09b00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mouseInventoryItem: {fileID: 412001400}
-  inventoryHolder: {fileID: 1713811559}
-  slots:
-  - {fileID: 7545632881531122680}
-  - {fileID: 872184135}
-  - {fileID: 314045569}
-  - {fileID: 713992826}
-  - {fileID: 431704818}
-  - {fileID: 343327548}
-  - {fileID: 1831298949}
-  - {fileID: 1208939697}
-  - {fileID: 839277184}
-  - {fileID: 1578165393}
 --- !u!114 &48823684
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,6 +333,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 48823681}
   m_CullTransparentMesh: 1
+--- !u!114 &48823688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 48823681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4d05afc5c67a1e4bbf2e0c9e986e1d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouseInventoryItem: {fileID: 412001400}
+  inventoryHolder: {fileID: 1713811559}
+  slots:
+  - {fileID: 7545632881531122680}
+  - {fileID: 872184135}
+  - {fileID: 314045569}
+  - {fileID: 713992826}
+  - {fileID: 431704818}
+  - {fileID: 343327548}
+  - {fileID: 1831298949}
+  - {fileID: 1208939697}
+  - {fileID: 839277184}
+  - {fileID: 1578165393}
 --- !u!1 &50311124
 GameObject:
   m_ObjectHideFlags: 0

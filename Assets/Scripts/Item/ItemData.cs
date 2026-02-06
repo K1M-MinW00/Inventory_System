@@ -19,4 +19,9 @@ public class ItemData : ScriptableObject
 
     [TextArea(4, 4)]
     public string Description;
+
+    public void UseItem()
+    {
+        Debug.Log($"Using {DisplayName}.");
+    }
 }
