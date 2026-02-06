@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,6 +10,10 @@ public class ShopKeeper : MonoBehaviour, IInteractable
     [SerializeField] private ShopSystem shopSystem;
 
     public static UnityAction<ShopSystem, PlayerInventoryHolder> OnShopWindowRequested;
+
+    private ShopSaveData shopSaveData;
+    private string id;
+
     private void Awake()
     {
         shopSystem = new ShopSystem(shopItemHeld.Items.Count, shopItemHeld.MaxAllowedGold, shopItemHeld.BuyMarkUp, shopItemHeld.SellMarkUp); ;
@@ -17,7 +23,38 @@ public class ShopKeeper : MonoBehaviour, IInteractable
             Debug.Log($"{item.ItemData.DisplayName} : {item.Amount}");
             shopSystem.AddToShop(item.ItemData, item.Amount);
         }
+
+        id = GetComponent<UniqueID>().ID;
+        shopSaveData = new ShopSaveData(shopSystem);
     }
+
+    private void Start()
+    {
+        if (!SaveGameManager.data.shopKeeperDictionary.ContainsKey(id))
+        {
+            SaveGameManager.data.shopKeeperDictionary.Add(id, shopSaveData);
+        }
+    }
+
+    private void OnEnable()
+    {
+        SaveLoad.OnLoadGame += LoadInventory;
+    }
+
+    private void OnDisable()
+    {
+        SaveLoad.OnLoadGame -= LoadInventory;
+    }
+
+    private void LoadInventory(SaveData data)
+    {
+        if (!data.shopKeeperDictionary.TryGetValue(id, out ShopSaveData _shopSaveData))
+            return;
+
+        shopSaveData = _shopSaveData;
+        shopSystem = _shopSaveData.ShopSystem;
+    }
+
     public UnityAction<IInteractable> OnInteractionComplete { get; set; }
     public void Interact(Interactor interactor, out bool interactSuccessful)
     {
@@ -40,4 +77,15 @@ public class ShopKeeper : MonoBehaviour, IInteractable
     {
     }
 
+}
+
+[System.Serializable]
+public class ShopSaveData
+{
+    public ShopSystem ShopSystem;
+
+    public ShopSaveData(ShopSystem shopSystem)
+    {
+        ShopSystem = shopSystem;
+    }
 }

@@ -59,6 +59,7 @@ public class ShopKeeperDisplay : MonoBehaviour
         }
 
         ClearSlots();
+        ClearItemPreview();
 
         basketTotalText.enabled = false;
         buyBtn.gameObject.SetActive(false);
@@ -68,11 +69,29 @@ public class ShopKeeperDisplay : MonoBehaviour
         playerGoldText.text = $"Player Gold :{playerInventoryHolder.PrimaryInventorySystem.Gold}";
         shopGoldText.text = $"Shop Gold :{shopSystem.AvailableGold}";
 
-        DisplayShopInventory();
+        if (isSelling)
+            DisplayPlayerInventory();
+
+        else
+            DisplayShopInventory();
     }
 
     private void SellItems()
     {
+        if (shopSystem.AvailableGold < basketTotal)
+            return;
+
+        foreach (var kvp in shoppingCart)
+        {
+            var price = GetModifiedPrice(kvp.Key, kvp.Value, shopSystem.SellMarkUp);
+
+            shopSystem.SellItem(kvp.Key, kvp.Value, price);
+
+            playerInventoryHolder.PrimaryInventorySystem.GainGold(price);
+            playerInventoryHolder.PrimaryInventorySystem.RemoveItemsFromInventory(kvp.Key, kvp.Value);
+        }
+
+        RefreshDisplay();
     }
 
     private void BuyItems()
@@ -130,7 +149,15 @@ public class ShopKeeperDisplay : MonoBehaviour
 
     private void DisplayPlayerInventory()
     {
+        foreach (var item in playerInventoryHolder.PrimaryInventorySystem.GetAllItemsHeld())
+        {
+            var tempSlot = new ShopSlot();
 
+            tempSlot.AssignItem(item.Key, item.Value);
+
+            var shopSlot = Instantiate(shopSlotPrefab, itemListContentPanel.transform);
+            shopSlot.Init(tempSlot, shopSystem.SellMarkUp);
+        }
     }
 
     public void AddItemToCart(ShopSlot_UI shopSlot_UI)
@@ -188,7 +215,7 @@ public class ShopKeeperDisplay : MonoBehaviour
     {
         var baseValue = data.GoldValue * amount;
 
-        return Mathf.RoundToInt(baseValue + baseValue * markUp);
+        return Mathf.FloorToInt(baseValue + baseValue * markUp);
     }
 
     public void RemoveItemFromCart(ShopSlot_UI shopSlot_UI)
@@ -226,13 +253,33 @@ public class ShopKeeperDisplay : MonoBehaviour
 
     private void ClearItemPreview()
     {
-
+        itemPreviewSprite.sprite = null;
+        itemPreviewSprite.color = Color.clear;
+        itemPreviewName.text = "";
+        itemPreviewDescription.text = "";
     }
 
     private void UpdateItemPreview(ShopSlot_UI shopSlot_UI)
     {
+        var data = shopSlot_UI.AssignedItemSlot.ItemData;
+
+        itemPreviewSprite.sprite = data.Icon;
+        itemPreviewSprite.color = Color.white;
+        itemPreviewName.text = data.DisplayName;
+        itemPreviewDescription.text = data.Description;
 
     }
 
+    public void OnBuyTabPressed()
+    {
+        isSelling = false;
+        RefreshDisplay();
+    }
+
+    public void OnSellTabPressed()
+    {
+        isSelling = true;
+        RefreshDisplay();
+    }
 
 }

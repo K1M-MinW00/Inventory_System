@@ -105,4 +105,50 @@ public class InventorySystem
     {
         gold -= basketTotal;
     }
+
+    public Dictionary<ItemData, int> GetAllItemsHeld()
+    {
+        var distinctItems = new Dictionary<ItemData, int>();
+
+        foreach (var item in inventorySlots)
+        {
+            if (item.ItemData == null)
+                continue;
+
+            if (!distinctItems.ContainsKey(item.ItemData))
+                distinctItems.Add(item.ItemData, item.StackSize);
+            else
+                distinctItems[item.ItemData] += item.StackSize;
+        }
+
+        return distinctItems;
+    }
+
+    public void GainGold(int price)
+    {
+        gold += price;
+    }
+
+    public void RemoveItemsFromInventory(ItemData data, int amount)
+    {
+        if (ContainsItem(data, out List<InventorySlot> invSlot))
+        {
+            foreach (var slot in invSlot)
+            {
+                var stackSize = slot.StackSize;
+
+                if (stackSize > amount)
+                    slot.RemoveFromStack(amount);
+
+                else
+                    slot.RemoveFromStack(stackSize);
+
+                OnInventorySlotChanged?.Invoke(slot);
+
+                amount -= stackSize;
+                if (amount <= 0)
+                    return;
+            }
+        }
+    }
 }
